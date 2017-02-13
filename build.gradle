@@ -1,0 +1,28 @@
+repositories {
+    maven {
+        url("http://maven.oschina.net/content/groups/public/")
+    }
+}
+
+subprojects {
+    group 'top.starcatmeow'
+    version '0.1-Alpha'
+    apply plugin: 'java'
+    repositories {
+        maven {
+            url("http://maven.oschina.net/content/groups/public/")
+        }
+    }
+}
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+}
+
+task SyncJar(type: Sync) {
+    from('EncryptedChatClient/build/libs')
+    from('EncryptedChatServer/build/libs')
+    into 'build/libs'
+}
