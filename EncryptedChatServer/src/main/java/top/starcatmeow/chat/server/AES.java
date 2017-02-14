@@ -11,19 +11,21 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Created by root on 2017/1/15.
+ * Created by Dongruixuan Li on 2017/1/15.
  */
 public class AES {
     private static AES aes = null;
     private SecretKey sk = null;
     private Cipher cipher;
-    private AES(){
-        sk = new SecretKeySpec(new byte[]{-13, -27, -99, 71, -42, -64, -28, -78, 19, -103, -126, 7, -34, 33, 61, 44},"aes");
+
+    private AES() {
+        sk = new SecretKeySpec(new byte[]{-13, -27, -99, 71, -42, -64, -28, -78, 19, -103, -126, 7, -34, 33, 61, 44}, "aes");
     }
-    protected String encrypt(String str){
+
+    protected String encrypt(String str) {
         try {
             cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE,sk);
+            cipher.init(Cipher.ENCRYPT_MODE, sk);
             return new BASE64Encoder().encode(cipher.doFinal(str.getBytes("utf-8")));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -40,11 +42,12 @@ public class AES {
         }
         return null;
     }
-    protected String decrypt(String str){
+
+    protected String decrypt(String str) {
         try {
             cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE,sk);
-            return new String(cipher.doFinal(new BASE64Decoder().decodeBuffer(str)),"utf-8");
+            cipher.init(Cipher.DECRYPT_MODE, sk);
+            return new String(cipher.doFinal(new BASE64Decoder().decodeBuffer(str)), "utf-8");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
@@ -60,10 +63,11 @@ public class AES {
         }
         return null;
     }
-    public static AES getInstance(){
-        if(aes == null){
-            return aes=new AES();
-        }else{
+
+    public static AES getInstance() {
+        if (aes == null) {
+            return aes = new AES();
+        } else {
             return aes;
         }
     }

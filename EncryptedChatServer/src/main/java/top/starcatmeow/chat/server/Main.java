@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by root on 2017/1/14.
+ * Created by Dongruixuan Li on 2017/1/14.
  */
 public class Main {
     public static List<Socket> sockets = null;
     static ServerSocket ss = null;
     public static int OnlineCount = 0;
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         sockets = new ArrayList<Socket>();
         try {
             ss = new ServerSocket(2333);
@@ -22,7 +23,7 @@ public class Main {
             System.out.println("端口监听服务启动失败，错误：");
             e.printStackTrace();
         }
-        while(true){
+        while (true) {
             try {
                 Socket tempsocket = ss.accept();
                 new Thread(new Cert(tempsocket)).start();

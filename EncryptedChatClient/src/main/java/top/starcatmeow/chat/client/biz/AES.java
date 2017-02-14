@@ -9,6 +9,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Created by Dongruixuan Li on 2017/1/30.
+ */
 public class AES {
     private static AES aes = null;
     private SecretKey sk = null;

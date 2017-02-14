@@ -6,6 +6,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+/**
+ * Created by Dongruixuan Li on 2017/1/30.
+ */
 public class ChatClientUI extends JFrame {
     private JPanel jp1 = null, jp2 = null, jp3 = null, jp4 = null;
     private JLabel jl1 = null;

@@ -13,6 +13,9 @@ import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
+/**
+ * Created by Dongruixuan Li on 2017/1/30.
+ */
 public class RSA {
     static RSA rsa = null;
     Cipher cipher = null;

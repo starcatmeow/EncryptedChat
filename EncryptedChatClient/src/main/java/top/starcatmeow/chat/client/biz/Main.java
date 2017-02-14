@@ -9,6 +9,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * Created by Dongruixuan Li on 2017/1/30.
+ */
 public class Main {
     static Socket socket = null;
     static JLabel label = null;

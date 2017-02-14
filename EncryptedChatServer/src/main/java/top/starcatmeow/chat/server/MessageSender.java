@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Created by root on 2017/1/14.
+ * Created by Dongruixuan Li on 2017/1/14.
  */
 public class MessageSender {
-    public static void Send(Socket socket, String msg){
+    public static void Send(Socket socket, String msg) {
         DataOutputStream dos = null;
         try {
             dos = new DataOutputStream(socket.getOutputStream());
@@ -18,9 +18,10 @@ public class MessageSender {
             e.printStackTrace();
         }
     }
-    public static void Broadcast(String str){
-        for(Socket s: Main.sockets){
-            Send(s,str);
+
+    public static void Broadcast(String str) {
+        for (Socket s : Main.sockets) {
+            Send(s, str);
         }
     }
 }

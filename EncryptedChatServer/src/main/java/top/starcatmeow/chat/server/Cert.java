@@ -12,11 +12,14 @@ import java.net.Socket;
 import java.security.*;
 
 /**
- * Created by root on 2017/1/15.
+ * Created by Dongruixuan Li on 2017/1/15.
  */
-public class Cert implements Runnable{
+public class Cert implements Runnable {
     Socket socket = null;
-    public Cert(Socket socket){this.socket = socket;}
+
+    public Cert(Socket socket) {
+        this.socket = socket;
+    }
 
     @Override
     public void run() {
@@ -41,8 +44,8 @@ public class Cert implements Runnable{
         String username = null;
         String password = null;
         try {
-            username = RSA.getInstance().decrypt(dis.readUTF(),kp.getPrivate());
-            password = RSA.getInstance().decrypt(dis.readUTF(),kp.getPrivate());
+            username = RSA.getInstance().decrypt(dis.readUTF(), kp.getPrivate());
+            password = RSA.getInstance().decrypt(dis.readUTF(), kp.getPrivate());
         } catch (NoSuchPaddingException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -63,9 +66,9 @@ public class Cert implements Runnable{
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(username.equals("test") && password.equals("testpassword")){
+        if (username.equals("test") && password.equals("testpassword")) {
             try {
-                dos.writeUTF(RSA.getInstance().encrypt("kf*MxU2|)+bsPCm:",pk1));
+                dos.writeUTF(RSA.getInstance().encrypt("kf*MxU2|)+bsPCm:", pk1));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (NoSuchPaddingException e) {
@@ -80,16 +83,16 @@ public class Cert implements Runnable{
                 e.printStackTrace();
             }
             try {
-                dos.writeUTF(RSA.getInstance().encrypt(new byte[]{-13, -27, -99, 71, -42, -64, -28, -78, 19, -103, -126, 7, -34, 33, 61, 44},pk1));
+                dos.writeUTF(RSA.getInstance().encrypt(new byte[]{-13, -27, -99, 71, -42, -64, -28, -78, 19, -103, -126, 7, -34, 33, 61, 44}, pk1));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            MessageSender.Send(socket,"已连接至服务器，目前有 "+(++Main.OnlineCount)+" 人在线");
+            MessageSender.Send(socket, "已连接至服务器，目前有 " + (++Main.OnlineCount) + " 人在线");
             new Thread(new MessageHandler(socket)).start();
-        }else{
+        } else {
             try {
-                dos.writeUTF(RSA.getInstance().encrypt(":N~n04$-rVhS=KxF",pk1));
-                System.out.println(socket.getInetAddress().getHostAddress()+":"+socket.getPort()+"尝试登陆，已拒绝，所输入的账号为："+username+"   密码为："+password);
+                dos.writeUTF(RSA.getInstance().encrypt(":N~n04$-rVhS=KxF", pk1));
+                System.out.println(socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + "尝试登陆，已拒绝，所输入的账号为：" + username + "   密码为：" + password);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (NoSuchPaddingException e) {

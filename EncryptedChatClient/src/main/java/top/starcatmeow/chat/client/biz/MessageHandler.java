@@ -5,6 +5,9 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * Created by Dongruixuan Li on 2017/1/30.
+ */
 public class MessageHandler implements Runnable {
     Socket socket = null;
     JTextArea jta = Main.ccui.getJta1();

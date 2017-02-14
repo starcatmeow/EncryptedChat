@@ -10,6 +10,9 @@ import java.net.Socket;
 import java.security.KeyPair;
 import java.security.PublicKey;
 
+/**
+ * Created by Dongruixuan Li on 2017/1/30.
+ */
 public class Cert {
     public static void getAESKey(Socket socket) throws Exception {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
