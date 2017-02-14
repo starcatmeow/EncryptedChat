@@ -26,3 +26,7 @@ task SyncJar(type: Sync) {
     from('EncryptedChatServer/build/libs')
     into 'build/libs'
 }
+
+task removeJar(type: Delete) {
+    delete('build')
+}
