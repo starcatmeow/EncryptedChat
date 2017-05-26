@@ -2,36 +2,31 @@ package top.starcatmeow.chat.server;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * Created by Dongruixuan Li on 2017/1/14.
  */
 public class MessageHandler implements Runnable {
-    Socket socket;
+    Client client;
     String ip;
     String port;
 
-    public MessageHandler(Socket socket) {
-        this.socket = socket;
-        ip = socket.getInetAddress().getHostAddress();
-        port = Integer.toString(socket.getPort());
-        MessageSender.Broadcast(ip + ":" + port + " 已上线！现在有 " + Main.OnlineCount + " 人在线。");
-        Main.sockets.add(socket);
+    public MessageHandler(Client client) {
+        this.client = client;
     }
 
     @Override
     public void run() {
         try {
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            DataInputStream dis = new DataInputStream(client.getSocket().getInputStream());
             while (true) {
-                String temp = AES.getInstance().decrypt(dis.readUTF());
-                temp = socket.getInetAddress().getHostAddress() + ":" + Integer.toString(socket.getPort()) + " 说 " + temp;
+                String temp = client.getAes().decrypt(dis.readUTF());
+                temp = client.getIpandport() + " 说 " + temp;
                 MessageSender.Broadcast(temp);
             }
         } catch (IOException e) {
-            Main.sockets.remove(socket);
-            MessageSender.Broadcast(ip + ":" + port + " 已下线！现在有 " + (--Main.OnlineCount) + " 人在线");
+            Main.clients.remove(client.getSocket());
+            MessageSender.Broadcast(client.getIpandport() + " 已下线！现在有 " + (--Main.OnlineCount) + " 人在线");
         }
     }
 }

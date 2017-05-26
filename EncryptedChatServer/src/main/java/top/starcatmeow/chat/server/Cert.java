@@ -8,30 +8,39 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 
 /**
  * Created by Dongruixuan Li on 2017/1/15.
  */
 public class Cert implements Runnable {
-    Socket socket = null;
+    String[][] accountdatabase = {
+            {"test", "testpassword"},
+            {"test1", "testpassword1"},
+            {"测试", "测试密码"}
+    };
+    Account[] accounts = new Account[accountdatabase.length];
+    Client client;
 
-    public Cert(Socket socket) {
-        this.socket = socket;
+    public Cert(Client client) {
+        this.client = client;
     }
 
     @Override
     public void run() {
+        initAccounts();
         DataInputStream dis = null;
         DataOutputStream dos = null;
         try {
-            dis = new DataInputStream(socket.getInputStream());
+            dis = new DataInputStream(client.getSocket().getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            dos = new DataOutputStream(socket.getOutputStream());
+            dos = new DataOutputStream(client.getSocket().getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,7 +75,7 @@ public class Cert implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (username.equals("test") && password.equals("testpassword")) {
+        if (isValid(new Account(username, password))) {
             try {
                 dos.writeUTF(RSA.getInstance().encrypt("kf*MxU2|)+bsPCm:", pk1));
             } catch (IOException e) {
@@ -83,16 +92,18 @@ public class Cert implements Runnable {
                 e.printStackTrace();
             }
             try {
-                dos.writeUTF(RSA.getInstance().encrypt(new byte[]{-13, -27, -99, 71, -42, -64, -28, -78, 19, -103, -126, 7, -34, 33, 61, 44}, pk1));
+                client.makeAeskey();
+                dos.writeUTF(RSA.getInstance().encrypt(client.getAeskey().getEncoded(), pk1));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            MessageSender.Send(socket, "已连接至服务器，目前有 " + (++Main.OnlineCount) + " 人在线");
-            new Thread(new MessageHandler(socket)).start();
+            Main.clients.add(client);
+            MessageSender.Broadcast(username + " 已连接至服务器，目前有 " + (++Main.OnlineCount) + " 人在线");
+            new Thread(new MessageHandler(client)).start();
         } else {
             try {
                 dos.writeUTF(RSA.getInstance().encrypt(":N~n04$-rVhS=KxF", pk1));
-                System.out.println(socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + "尝试登陆，已拒绝，所输入的账号为：" + username + "   密码为：" + password);
+                System.out.println(client.getIpandport() + "尝试登陆，已拒绝，所输入的账号为：" + username + "   密码为：" + password);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (NoSuchPaddingException e) {
@@ -107,5 +118,19 @@ public class Cert implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void initAccounts() {
+        for (int count = 0; count < accountdatabase.length; count++) {
+            accounts[count] = new Account(accountdatabase[count][0], accountdatabase[count][1]);
+        }
+    }
+
+    private boolean isValid(Account account) {
+        for (Account rightaccount : accounts) {
+            if (rightaccount.equals(account))
+                return true;
+        }
+        return false;
     }
 }

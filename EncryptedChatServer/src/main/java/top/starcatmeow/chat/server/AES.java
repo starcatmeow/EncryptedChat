@@ -4,7 +4,6 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.*;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -14,12 +13,10 @@ import java.security.NoSuchAlgorithmException;
  * Created by Dongruixuan Li on 2017/1/15.
  */
 public class AES {
-    private static AES aes = null;
     private SecretKey sk = null;
     private Cipher cipher;
 
-    private AES() {
-        sk = new SecretKeySpec(new byte[]{-13, -27, -99, 71, -42, -64, -28, -78, 19, -103, -126, 7, -34, 33, 61, 44}, "aes");
+    public AES() {
     }
 
     protected String encrypt(String str) {
@@ -64,11 +61,7 @@ public class AES {
         return null;
     }
 
-    public static AES getInstance() {
-        if (aes == null) {
-            return aes = new AES();
-        } else {
-            return aes;
-        }
+    protected void setKey(SecretKey sk) {
+        this.sk = sk;
     }
 }
