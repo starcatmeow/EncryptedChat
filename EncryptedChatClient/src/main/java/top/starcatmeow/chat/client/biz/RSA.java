@@ -85,7 +85,7 @@ public class RSA {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        kpg.initialize(8192);
+        kpg.initialize(2048);
         return kpg.genKeyPair();
     }
 
