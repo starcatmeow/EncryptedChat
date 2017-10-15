@@ -6,7 +6,7 @@ repositories {
 
 subprojects {
     group 'top.starcatmeow'
-    version '0.1-Alpha'
+    version '1.0-release'
     apply plugin: 'java'
     repositories {
         maven {
