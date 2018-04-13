@@ -1,7 +1,6 @@
 package top.starcatmeow.chat.client.biz;
 
 import top.starcatmeow.chat.client.ui.ChatClientUI;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +17,11 @@ public class Main {
     static ChatClientUI ccui = null;
 
     public static void main(String[] args) {
+        try {
+            org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
+        } catch (Exception e) {
+            //TODO exception
+        }
         ccui = new ChatClientUI();
         ccui.setDefaultLookAndFeelDecorated(true);
         ccui.pack();

@@ -1,5 +1,9 @@
+
 jar {
     manifest {
         attributes 'Main-Class': 'top.starcatmeow.chat.client.biz.Main'
     }
+}
+dependencies{
+    compile files('../libs/beautyeye_lnf.jar')
 }
