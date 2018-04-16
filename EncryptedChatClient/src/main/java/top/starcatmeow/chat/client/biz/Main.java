@@ -3,6 +3,7 @@ package top.starcatmeow.chat.client.biz;
 import sun.plugin2.message.Message;
 import top.starcatmeow.chat.client.ui.ChatClientUI;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataOutputStream;
@@ -115,10 +116,50 @@ public class Main {
                         e1.printStackTrace();
                     }
                     jb2.setEnabled(true);
-                    jb2.setName("连接服务器");
+                    jb2.setText("连接服务器");
+                    label.setText("等待用户操作");
                 }
             }
         });
+        jb3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getActionCommand() == "其它连接模式") {
+                    JPanel oPanel = new JPanel(), oreceivePanel = new JPanel(), osendPanel = new JPanel();
+                    JTextField oreceiveJtf = new JTextField(), osendJtf = new JTextField();
+                    JButton oReceive = new JButton("确认"), osend = new JButton("拷贝");
 
+                    oreceivePanel.setLayout(new BorderLayout(5, 5));                                         //新建一个Panel->BorderLayout，包含接收框以及确认按钮，让用户把接收到的内容输入程序中
+                    oreceivePanel.add("Center", oreceiveJtf);
+                    oreceivePanel.add("East", oReceive);
+                    oreceivePanel.setBorder(BorderFactory.createTitledBorder("接收到的内容"));
+
+                    osendPanel.setLayout(new BorderLayout(5, 5));                                            //新建一个Panel->BorderLayout，包含输出框以及拷贝按钮，让用户把程序输出的内容发送出去
+                    osendPanel.add("Center", osendJtf);
+                    osendPanel.add("East", osend);
+                    osendPanel.setBorder(BorderFactory.createTitledBorder("需发送的内容"));
+
+                    oPanel.setLayout(new GridLayout(2, 1));                                                   //新建一个Panel->GridLayout，包含以上两个Panel
+                    oPanel.add(oreceivePanel);
+                    oPanel.add(osendPanel);
+
+                    ccui.getJp7().add("Center", oPanel);                                                           //加入其它连接模式需要的Panel
+                    ccui.revalidate();                                                                                  //重绘界面
+                    jb2.setEnabled(false);                                                                              //处理后续界面响应
+                    jb3.setText("退出此模式");
+                    label.setText("等待用户选择角色");
+
+                    Object[] options = {"发起方", "接收方"};
+                    int result = JOptionPane.showOptionDialog(null, "请选择你的角色", "选择角色", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+                    System.out.println(result);                                                                         //Debug！！！
+                } else if (e.getActionCommand() == "退出此模式") {
+                    ccui.getJp7().remove(1);
+                    ccui.revalidate();
+                    jb2.setEnabled(true);
+                    jb3.setText("其他连接模式");
+                    label.setText("等待用户操作");
+                }
+            }
+        });
     }
 }

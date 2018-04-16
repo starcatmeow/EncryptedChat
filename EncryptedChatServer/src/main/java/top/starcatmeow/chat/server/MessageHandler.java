@@ -25,7 +25,7 @@ public class MessageHandler implements Runnable {
                 MessageSender.Broadcast(temp);
             }
         } catch (IOException e) {
-            Main.clients.remove(client.getSocket());
+            Main.clients.remove(client);
             MessageSender.Broadcast(client.getIpandport() + " 已下线！现在有 " + (--Main.OnlineCount) + " 人在线");
         }
     }
