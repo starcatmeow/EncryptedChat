@@ -1,7 +1,10 @@
 package top.starcatmeow.chat.client.biz;
 
+import sun.misc.BASE64Encoder;
 import sun.plugin2.message.Message;
 import top.starcatmeow.chat.client.ui.ChatClientUI;
+
+import javax.crypto.spec.SecretKeySpec;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.security.KeyPair;
+import java.security.PublicKey;
 
 /**
  * Created by Dongruixuan Li on 2017/1/30.
@@ -17,7 +22,11 @@ public class Main {
     static Socket socket = null;
     static JLabel label = null;
     static ChatClientUI ccui = null;
+    static String receiveBuffer = null;
     private static Thread messagehandlerThread = null;
+    static JPanel oPanel = new JPanel(), oreceivePanel = new JPanel(), osendPanel = new JPanel();
+    static JTextField oreceiveJtf = new JTextField(), osendJtf = new JTextField();
+    static JButton oReceive = new JButton("确认"), osend = new JButton("拷贝");
 
     public static void main(String[] args) {
         try {
@@ -125,9 +134,7 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getActionCommand() == "其它连接模式") {
-                    JPanel oPanel = new JPanel(), oreceivePanel = new JPanel(), osendPanel = new JPanel();
-                    JTextField oreceiveJtf = new JTextField(), osendJtf = new JTextField();
-                    JButton oReceive = new JButton("确认"), osend = new JButton("拷贝");
+
 
                     oreceivePanel.setLayout(new BorderLayout(5, 5));                                         //新建一个Panel->BorderLayout，包含接收框以及确认按钮，让用户把接收到的内容输入程序中
                     oreceivePanel.add("Center", oreceiveJtf);
@@ -147,11 +154,57 @@ public class Main {
                     ccui.revalidate();                                                                                  //重绘界面
                     jb2.setEnabled(false);                                                                              //处理后续界面响应
                     jb3.setText("退出此模式");
-                    label.setText("等待用户选择角色");
 
+                    oReceive.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (e.getActionCommand() == "确认") {
+                                if (!oreceiveJtf.getText().equals("")) {
+                                    receiveBuffer = oreceiveJtf.getText();
+                                    oreceiveJtf.setText("");
+                                }
+                            }
+                        }
+                    });
+
+                    label.setText("等待用户选择角色");
                     Object[] options = {"发起方", "接收方"};
                     int result = JOptionPane.showOptionDialog(null, "请选择你的角色", "选择角色", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-                    System.out.println(result);                                                                         //Debug！！！
+                    //System.out.println(result);                                                                         //Debug！！！
+                    if (result == 0) {
+
+                    } else if (result == 1) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Cert.getAESKey();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        }).start();
+
+
+                        messagehandlerThread = new Thread(new MessageHandler());
+                        messagehandlerThread.start();
+
+                        final JTextField jtf = ccui.getJtf1();
+
+                        jb1.setEnabled(true);
+                        jb1.addActionListener(new ActionListener() {
+
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                if (e.getActionCommand() == "发送") {
+                                    if (!jtf.getText().equals("")) {
+                                        osendJtf.setText(AES.getInstance().encrypt(jtf.getText()));
+                                        jtf.setText("");
+                                    }
+                                }
+                            }
+                        });
+                    }
                 } else if (e.getActionCommand() == "退出此模式") {
                     ccui.getJp7().remove(1);
                     ccui.revalidate();
@@ -161,5 +214,12 @@ public class Main {
                 }
             }
         });
+    }
+
+    public static String readfromOtherConnect() {
+        while (receiveBuffer == null) ;
+        String temp = receiveBuffer;
+        receiveBuffer = null;
+        return temp;
     }
 }

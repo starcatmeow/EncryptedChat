@@ -11,21 +11,34 @@ import java.net.Socket;
 public class MessageHandler implements Runnable {
     Socket socket = null;
     JTextArea jta = Main.ccui.getJta1();
+    boolean isSocket;
 
     public MessageHandler(Socket socket) {
+        isSocket = true;
         this.socket = socket;
+    }
+
+    public MessageHandler() {
+        isSocket = false;
     }
 
     @Override
     public void run() {
-        try {
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
+        if (isSocket) {
+            try {
+                DataInputStream dis = new DataInputStream(socket.getInputStream());
+                while (true) {
+                    jta.append(AES.getInstance().decrypt(dis.readUTF()) + "\n");
+                    jta.setCaretPosition(jta.getText().length());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
             while (true) {
-                jta.append(AES.getInstance().decrypt(dis.readUTF()) + "\n");
+                jta.append(AES.getInstance().decrypt(Main.readfromOtherConnect()) + "\n");
                 jta.setCaretPosition(jta.getText().length());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

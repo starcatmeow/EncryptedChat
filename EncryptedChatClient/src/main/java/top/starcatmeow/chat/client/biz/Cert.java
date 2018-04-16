@@ -37,4 +37,24 @@ public class Cert {
             Main.label.setText("服务器返回了不正确的数据，请检查版本是否匹配：" + report);
         }
     }
+
+    public static void getAESKey() throws Exception {
+        KeyPair kp1 = RSA.getInstance().RSAKeyGen();
+        PublicKey pk = kp1.getPublic();
+        String encodepubkey = new BASE64Encoder().encode(pk.getEncoded());
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Main.osendJtf.setText(encodepubkey);
+            }
+        });
+
+
+        try {
+            AES.getInstance().setKey(new SecretKeySpec(RSA.getInstance().decrypttobyte(Main.readfromOtherConnect(), kp1.getPrivate()), "AES"));
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+    }
 }
