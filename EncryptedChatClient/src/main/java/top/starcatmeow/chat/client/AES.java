@@ -1,4 +1,4 @@
-package top.starcatmeow.chat.client.biz;
+package top.starcatmeow.chat.client;
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * Created by Dongruixuan Li on 2017/1/30.
@@ -57,6 +58,12 @@ public class AES {
             e.printStackTrace();
         }
         return null;
+    }
+
+    protected SecretKey AESKeygen() throws NoSuchAlgorithmException {
+        KeyGenerator kg = KeyGenerator.getInstance("AES");
+        kg.init(128, new SecureRandom());
+        return kg.generateKey();
     }
 
     protected void setKey(SecretKey sk) {

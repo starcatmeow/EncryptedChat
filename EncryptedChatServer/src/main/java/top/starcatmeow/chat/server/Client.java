@@ -39,6 +39,11 @@ public class Client {
         return port;
     }
 
+    public void setAeskey(SecretKey key) {
+        aeskey = key;
+        aes.setKey(key);
+    }
+
     public String getIpandport() {
         return ipandport;
     }
@@ -62,10 +67,4 @@ public class Client {
         return aes;
     }
 
-    public void makeAeskey() throws NoSuchAlgorithmException {
-        KeyGenerator kg = KeyGenerator.getInstance("AES");
-        kg.init(128, new SecureRandom());
-        aeskey = kg.generateKey();
-        aes.setKey(aeskey);
-    }
 }

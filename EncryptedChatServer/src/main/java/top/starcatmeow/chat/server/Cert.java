@@ -92,7 +92,7 @@ public class Cert implements Runnable {
                 e.printStackTrace();
             }
             try {
-                client.makeAeskey();
+                client.setAeskey(client.getAes().AESKeygen());
                 dos.writeUTF(RSA.getInstance().encrypt(client.getAeskey().getEncoded(), pk1));
             } catch (Exception e) {
                 e.printStackTrace();

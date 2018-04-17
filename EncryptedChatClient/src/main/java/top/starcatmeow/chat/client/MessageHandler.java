@@ -1,4 +1,4 @@
-package top.starcatmeow.chat.client.biz;
+package top.starcatmeow.chat.client;
 
 import javax.swing.*;
 import java.io.DataInputStream;
@@ -8,9 +8,9 @@ import java.net.Socket;
 /**
  * Created by Dongruixuan Li on 2017/1/30.
  */
-public class MessageHandler implements Runnable {
+public class MessageHandler extends Thread {
     Socket socket = null;
-    JTextArea jta = Main.ccui.getJta1();
+    JTextArea jta = Main.ui.jta1;
     boolean isSocket;
 
     public MessageHandler(Socket socket) {
@@ -36,9 +36,10 @@ public class MessageHandler implements Runnable {
             }
         } else {
             while (true) {
-                jta.append(AES.getInstance().decrypt(Main.readfromOtherConnect()) + "\n");
+                jta.append(AES.getInstance().decrypt(ChatClientUI.readfromoreceivejtf()) + "\n");
                 jta.setCaretPosition(jta.getText().length());
             }
         }
     }
+
 }
