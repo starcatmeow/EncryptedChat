@@ -5,12 +5,8 @@ import sun.misc.Lock;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -44,8 +40,15 @@ public class ChatClientUI extends JFrame implements Runnable {
         }
 
         String temp = receiveBuffer;
+        temp = temp.replace(' ', '\n');
         receiveBuffer = null;
         return temp;
+    }
+
+    public static void writetoosendjtf(String str) {
+        osendJtf.setText(str.replace('\n', ' '));
+        osend.setEnabled(true);
+        osend.setText("拷贝");
     }
 
     public ChatClientUI() {
@@ -137,27 +140,8 @@ public class ChatClientUI extends JFrame implements Runnable {
         ccui.setTitle("聊天系统客户端");
         ccui.setVisible(true);
         label.setText("等待用户操作");
-        jb2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ap.actionPerformed(e);
-                    }
-                }).start();
-            }
-        });
-        jb3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ap.actionPerformed(e);
-                    }
-                }).start();
-            }
-        });
+        jb2.addActionListener(e -> new Thread(() -> ap.actionPerformed(e)).start());
+        jb3.addActionListener(e -> new Thread(() -> ap.actionPerformed(e)).start());
+        osend.addActionListener(e -> new Thread(() -> ap.actionPerformed(e)).start());
     }
 }

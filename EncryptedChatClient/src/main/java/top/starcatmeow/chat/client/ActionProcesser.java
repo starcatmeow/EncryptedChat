@@ -2,6 +2,9 @@ package top.starcatmeow.chat.client;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataOutputStream;
@@ -141,26 +144,21 @@ public class ActionProcesser implements ActionListener {
                 jb1.addActionListener(e12 -> {
                     if (e12.getActionCommand() == "发送") {
                         if (!jtf.getText().equals("")) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    osendJtf.setText(AES.getInstance().encrypt(jtf.getText()));
-                                    jtf.setText("");
-                                }
+                            SwingUtilities.invokeLater(() -> {
+                                String encryptedchat = AES.getInstance().encrypt(jtf.getText());
+                                ChatClientUI.writetoosendjtf(encryptedchat);
+                                jtf.setText("");
                             });
 
                         }
                     }
                 });
             } else if (result == 1) {
-//                Thread certThread = new Thread(() -> {
                 try {
                     Cert.getAESKey();
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
-//                });
-//                certThread.start();
 
 
                 Main.messagehandlerThread = new Thread(new MessageHandler());
@@ -173,12 +171,10 @@ public class ActionProcesser implements ActionListener {
                     if (e12.getActionCommand() == "发送") {
                         if (!jtf.getText().equals("")) {
 
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    osendJtf.setText(AES.getInstance().encrypt(jtf.getText()));
-                                    jtf.setText("");
-                                }
+                            SwingUtilities.invokeLater(() -> {
+                                String encryptedchat = AES.getInstance().encrypt(jtf.getText());
+                                ChatClientUI.writetoosendjtf(encryptedchat);
+                                jtf.setText("");
                             });
 
                         }
@@ -192,6 +188,13 @@ public class ActionProcesser implements ActionListener {
             jb2.setEnabled(true);
             jb3.setText("其他连接模式");
             label.setText("等待用户操作");
+        }
+        if (e.getActionCommand() == "拷贝") {
+            Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+            Transferable tText = new StringSelection(osendJtf.getText());
+            clip.setContents(tText, null);
+            osend.setText("已拷贝");
+            osend.setEnabled(false);
         }
     }
 }

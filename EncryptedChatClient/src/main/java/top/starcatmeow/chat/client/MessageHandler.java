@@ -36,7 +36,11 @@ public class MessageHandler extends Thread {
             }
         } else {
             while (true) {
-                jta.append(AES.getInstance().decrypt(ChatClientUI.readfromoreceivejtf()) + "\n");
+                String encryptedchat = ChatClientUI.readfromoreceivejtf();
+                System.out.println("recieve chat:" + encryptedchat);
+                String decryptedchat = AES.getInstance().decrypt(encryptedchat);
+                System.out.println(decryptedchat);
+                jta.append(decryptedchat + "\n");
                 jta.setCaretPosition(jta.getText().length());
             }
         }

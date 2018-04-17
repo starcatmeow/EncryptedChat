@@ -44,19 +44,16 @@ public class Cert {
         KeyPair kp1 = RSA.getInstance().RSAKeyGen();
         PublicKey pk = kp1.getPublic();
         String encodepubkey = new BASE64Encoder().encode(pk.getEncoded());
-        encodepubkey = encodepubkey.replace('\n', ' ');
         System.out.println(encodepubkey);
         String finalEncodepubkey = encodepubkey;
-        SwingUtilities.invokeLater(() -> ChatClientUI.osendJtf.setText(finalEncodepubkey));
+        SwingUtilities.invokeLater(() -> ChatClientUI.writetoosendjtf(finalEncodepubkey));
 
-
-        AES.getInstance().setKey(new SecretKeySpec(RSA.getInstance().decrypttobyte(ChatClientUI.readfromoreceivejtf(), kp1.getPrivate()), "AES"));
+        String encryptedaeskey = ChatClientUI.readfromoreceivejtf();
+        AES.getInstance().setKey(new SecretKeySpec(RSA.getInstance().decrypttobyte(encryptedaeskey, kp1.getPrivate()), "AES"));
     }
 
     public static void makeandsendAESKey() {
         String encodepubkey = ChatClientUI.readfromoreceivejtf();
-        encodepubkey = encodepubkey.replace(' ', '\n');
-        System.out.println(encodepubkey);
         PublicKey pk = null;
         try {
             pk = RSA.getInstance().getPublicKey(encodepubkey);
@@ -80,7 +77,7 @@ public class Cert {
 
         System.out.println("Over,key:" + encryptedaeskey);
         String finalEncryptedaeskey = encryptedaeskey;
-        SwingUtilities.invokeLater(() -> ChatClientUI.osendJtf.setText(finalEncryptedaeskey));
+        SwingUtilities.invokeLater(() -> ChatClientUI.writetoosendjtf(finalEncryptedaeskey));
 
     }
 }
