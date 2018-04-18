@@ -13,8 +13,9 @@ public class Main {
     public static List<Client> clients = null;
     static ServerSocket ss = null;
     public static int OnlineCount = 0;
-
+    public static Config config = null;
     public static void main(String[] args) {
+        config = new Config();
         clients = new ArrayList<Client>();
         try {
             ss = new ServerSocket(2333);

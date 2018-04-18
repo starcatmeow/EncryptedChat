@@ -17,12 +17,6 @@ import java.security.PublicKey;
  * Created by Dongruixuan Li on 2017/1/15.
  */
 public class Cert implements Runnable {
-    String[][] accountdatabase = {
-            {"test", "testpassword"},
-            {"test1", "testpassword1"},
-            {"测试", "测试密码"}
-    };
-    Account[] accounts = new Account[accountdatabase.length];
     Client client;
 
     public Cert(Client client) {
@@ -31,7 +25,6 @@ public class Cert implements Runnable {
 
     @Override
     public void run() {
-        initAccounts();
         DataInputStream dis = null;
         DataOutputStream dos = null;
         try {
@@ -75,7 +68,7 @@ public class Cert implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (isValid(new Account(username, password))) {
+        if (Main.config.isValid(new Account(username, password))) {
             try {
                 dos.writeUTF(RSA.getInstance().encrypt("kf*MxU2|)+bsPCm:", pk1));
             } catch (IOException e) {
@@ -119,19 +112,5 @@ public class Cert implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void initAccounts() {
-        for (int count = 0; count < accountdatabase.length; count++) {
-            accounts[count] = new Account(accountdatabase[count][0], accountdatabase[count][1]);
-        }
-    }
-
-    private boolean isValid(Account account) {
-        for (Account rightaccount : accounts) {
-            if (rightaccount.equals(account))
-                return true;
-        }
-        return false;
     }
 }
