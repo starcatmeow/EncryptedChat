@@ -19,6 +19,7 @@ public class ActionProcesser implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand() == "连接服务器") {
             jb2.setEnabled(false);
+            jb3.setEnabled(false);
             label.setText("等待输入服务器信息");
 
             boolean b1 = true;
@@ -34,10 +35,16 @@ public class ActionProcesser implements ActionListener {
                     label.setText("Socket连接建立成功，正在从服务器取得密钥（1/5）");
                 } catch (IOException e1) {
                     e1.printStackTrace();
-                    label.setText("连接建立失败，请检查IP或端口是否输入正确");
+                    label.setText("无法连接至服务器，请尝试重新连接");
+                    jb2.setEnabled(true);
+                    jb3.setEnabled(true);
+                    return;
                 } catch (NumberFormatException e1) {
                     e1.printStackTrace();
-                    label.setText("连接建立失败，请检查IP或端口是否输入正确");
+                    label.setText("无法连接至服务器，请尝试重新连接");
+                    jb2.setEnabled(true);
+                    jb3.setEnabled(true);
+                    return;
                 }
             }
 
@@ -60,6 +67,7 @@ public class ActionProcesser implements ActionListener {
             }
             final DataOutputStream finalDos = dos;
             jb1.setEnabled(true);
+            jtf1.setEnabled(true);
             jb2.setEnabled(true);
             jb2.setText("断开连接");
             jb1.addActionListener(e14 -> {
@@ -78,6 +86,7 @@ public class ActionProcesser implements ActionListener {
         if (e.getActionCommand() == "断开连接") {
             Main.messagehandlerThread.interrupt();
             jb1.setEnabled(false);
+            jtf1.setEnabled(false);
             jb2.setEnabled(false);
 
             try {
@@ -85,14 +94,18 @@ public class ActionProcesser implements ActionListener {
             } catch (IOException e1) {
                 JOptionPane.showMessageDialog(null, "断开失败！请尝试重启客户端！");
                 e1.printStackTrace();
+                return;
             }
             jb2.setEnabled(true);
+            jb3.setEnabled(true);
             jb2.setText("连接服务器");
+            int clear = JOptionPane.showConfirmDialog(null, "是否清空聊天记录？", "清屏", JOptionPane.YES_NO_OPTION);
+            if (clear == 0) {
+                jta1.setText("");
+            }
             label.setText("等待用户操作");
         }
         if (e.getActionCommand() == "其它连接模式") {
-
-
             oreceivePanel.setLayout(new BorderLayout(5, 5));                                         //新建一个Panel->BorderLayout，包含接收框以及确认按钮，让用户把接收到的内容输入程序中
             oreceivePanel.add("Center", oreceiveJtf);
             oreceivePanel.add("East", oReceive);
@@ -112,21 +125,14 @@ public class ActionProcesser implements ActionListener {
             jb2.setEnabled(false);                                                                              //处理后续界面响应
             jb3.setText("退出此模式");
 
-            oReceive.addActionListener(e13 -> {
-                if (e13.getActionCommand() == "确认") {
-                    System.out.println("received signal");
-                    if (!oreceiveJtf.getText().equals("")) {
-                        receiveBuffer = oreceiveJtf.getText();
-                        oreceiveJtf.setText("");
-                        System.out.println("buffer ok");
-                    }
-                }
-            });
+
 
             label.setText("等待用户选择角色");
             Object[] options = {"发起方", "接收方"};
             int result = JOptionPane.showOptionDialog(null, "请选择你的角色", "选择角色", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
             if (result == 0) {
+                inOther = true;
+                SwingUtilities.invokeLater(() -> label.setText("等待对方发送公钥"));
 //                new Thread(()->{
                 try {
                     Cert.makeandsendAESKey();
@@ -134,59 +140,48 @@ public class ActionProcesser implements ActionListener {
                     e1.printStackTrace();
                 }
 //                }).start();
-
+                jb1.addActionListener(ap);
                 Main.messagehandlerThread = new Thread(new MessageHandler());
                 Main.messagehandlerThread.start();
 
-                final JTextField jtf = ccui.jtf1;
-
                 jb1.setEnabled(true);
-                jb1.addActionListener(e12 -> {
-                    if (e12.getActionCommand() == "发送") {
-                        if (!jtf.getText().equals("")) {
-                            SwingUtilities.invokeLater(() -> {
-                                String encryptedchat = AES.getInstance().encrypt(jtf.getText());
-                                ChatClientUI.writetoosendjtf(encryptedchat);
-                                jtf.setText("");
-                            });
-
-                        }
-                    }
-                });
+                jtf1.setEnabled(true);
+                SwingUtilities.invokeLater(() -> label.setText("正常"));
             } else if (result == 1) {
+                inOther = true;
+                SwingUtilities.invokeLater(() -> label.setText("等待对方发送密钥"));
                 try {
                     Cert.getAESKey();
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
 
-
+                jb1.addActionListener(ap);
                 Main.messagehandlerThread = new Thread(new MessageHandler());
                 Main.messagehandlerThread.start();
 
-                final JTextField jtf = ccui.jtf1;
-
                 jb1.setEnabled(true);
-                jb1.addActionListener(e12 -> {
-                    if (e12.getActionCommand() == "发送") {
-                        if (!jtf.getText().equals("")) {
-
-                            SwingUtilities.invokeLater(() -> {
-                                String encryptedchat = AES.getInstance().encrypt(jtf.getText());
-                                ChatClientUI.writetoosendjtf(encryptedchat);
-                                jtf.setText("");
-                            });
-
-                        }
-                    }
-                });
+                jtf1.setEnabled(true);
+                SwingUtilities.invokeLater(() -> label.setText("正常"));
             }
         }
         if (e.getActionCommand() == "退出此模式") {
+            inOther = false;
             ccui.jp7.remove(1);
             ccui.revalidate();
+            jb1.removeActionListener(ChatClientUI.ap);
+            jb1.setEnabled(false);
+            jtf1.setEnabled(false);
             jb2.setEnabled(true);
-            jb3.setText("其他连接模式");
+            jb3.setText("其它连接模式");
+
+            oreceiveJtf.setText("");
+            osendJtf.setText("");
+            Main.messagehandlerThread.stop();
+            int clear = JOptionPane.showConfirmDialog(null, "是否清空聊天记录？", "清屏", JOptionPane.YES_NO_OPTION);
+            if (clear == 0) {
+                jta1.setText("");
+            }
             label.setText("等待用户操作");
         }
         if (e.getActionCommand() == "拷贝") {
@@ -195,6 +190,24 @@ public class ActionProcesser implements ActionListener {
             clip.setContents(tText, null);
             osend.setText("已拷贝");
             osend.setEnabled(false);
+        }
+        if (e.getActionCommand() == "确认") {
+            if (!oreceiveJtf.getText().equals("")) {
+                receiveBuffer = oreceiveJtf.getText();
+                oreceiveJtf.setText("");
+            }
+        }
+        if (e.getActionCommand() == "发送") {
+            if (!jtf1.getText().equals("")) {
+
+                SwingUtilities.invokeLater(() -> {
+                    String encryptedchat = AES.getInstance().encrypt(jtf1.getText());
+                    ChatClientUI.writetoosendjtf(encryptedchat);
+                    jta1.append("你 说 " + jtf1.getText() + "\n");
+                    jtf1.setText("");
+                });
+
+            }
         }
     }
 }

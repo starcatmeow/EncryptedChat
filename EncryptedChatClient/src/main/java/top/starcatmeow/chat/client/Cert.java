@@ -44,11 +44,11 @@ public class Cert {
         KeyPair kp1 = RSA.getInstance().RSAKeyGen();
         PublicKey pk = kp1.getPublic();
         String encodepubkey = new BASE64Encoder().encode(pk.getEncoded());
-        System.out.println(encodepubkey);
         String finalEncodepubkey = encodepubkey;
         SwingUtilities.invokeLater(() -> ChatClientUI.writetoosendjtf(finalEncodepubkey));
 
         String encryptedaeskey = ChatClientUI.readfromoreceivejtf();
+        SwingUtilities.invokeLater(() -> ChatClientUI.label.setText("正在解密密钥"));
         AES.getInstance().setKey(new SecretKeySpec(RSA.getInstance().decrypttobyte(encryptedaeskey, kp1.getPrivate()), "AES"));
     }
 
@@ -60,6 +60,7 @@ public class Cert {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        SwingUtilities.invokeLater(() -> ChatClientUI.label.setText("正在生成密钥"));
         SecretKey sk = null;
 
         try {
@@ -75,7 +76,6 @@ public class Cert {
             e.printStackTrace();
         }
 
-        System.out.println("Over,key:" + encryptedaeskey);
         String finalEncryptedaeskey = encryptedaeskey;
         SwingUtilities.invokeLater(() -> ChatClientUI.writetoosendjtf(finalEncryptedaeskey));
 

@@ -23,13 +23,14 @@ public class ChatClientUI extends JFrame implements Runnable {
     static JLabel label = null;
     static ChatClientUI ccui = null;
 
+    static boolean inOther = false;
     static String receiveBuffer = null;
     static JPanel oPanel = new JPanel(), oreceivePanel = new JPanel(), osendPanel = new JPanel();
     static JTextField oreceiveJtf = new JTextField(), osendJtf = new JTextField();
     static JButton oReceive = new JButton("确认"), osend = new JButton("拷贝");
     static Lock readLock = new Lock();
 
-    private static ActionProcesser ap = new ActionProcesser();
+    protected static ActionProcesser ap = new ActionProcesser();
 
     public static String readfromoreceivejtf() {
         while (receiveBuffer == null) {
@@ -69,6 +70,7 @@ public class ChatClientUI extends JFrame implements Runnable {
 
             @Override
             public void keyPressed(KeyEvent e) {
+
                 if (e.getKeyChar() == KeyEvent.VK_ENTER && (!jtf1.getText().equals(""))) {
                     jb1.doClick();
                 }
@@ -80,6 +82,10 @@ public class ChatClientUI extends JFrame implements Runnable {
             }
         });
         jb1 = new JButton("发送");
+        jb1.setEnabled(false);
+        jtf1.setEnabled(false);
+        osendJtf.setEnabled(false);
+        osend.setEnabled(false);
         jb2 = new JButton("连接服务器");
         jb3 = new JButton("其它连接模式");
         jp1 = new JPanel();
@@ -140,8 +146,29 @@ public class ChatClientUI extends JFrame implements Runnable {
         ccui.setTitle("聊天系统客户端");
         ccui.setVisible(true);
         label.setText("等待用户操作");
+
+        oreceiveJtf.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+                if (e.getKeyChar() == KeyEvent.VK_ENTER && (!oreceiveJtf.getText().equals(""))) {
+                    oReceive.doClick();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
         jb2.addActionListener(e -> new Thread(() -> ap.actionPerformed(e)).start());
         jb3.addActionListener(e -> new Thread(() -> ap.actionPerformed(e)).start());
         osend.addActionListener(e -> new Thread(() -> ap.actionPerformed(e)).start());
+        oReceive.addActionListener(e -> new Thread(() -> ap.actionPerformed(e)).start());
     }
 }
