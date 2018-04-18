@@ -1,6 +1,9 @@
 apply plugin: 'java'
 repositories {
-    mavenCentral()
+
+    maven{
+        url 'http://maven.aliyun.com/nexus/content/groups/public/'
+    }
 }
 
 subprojects {
@@ -8,7 +11,9 @@ subprojects {
     version '1.0-release'
     apply plugin: 'java'
     repositories {
-        mavenCentral()
+        maven{
+            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+        }
     }
 }
 
@@ -20,6 +25,9 @@ allprojects {
     }
     dependencies{
         compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.46'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.5'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.5'
     }
 }
 

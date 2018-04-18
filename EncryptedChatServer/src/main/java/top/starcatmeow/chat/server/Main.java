@@ -18,8 +18,8 @@ public class Main {
         config = new Config();
         clients = new ArrayList<Client>();
         try {
-            ss = new ServerSocket(2333);
-            System.out.println("正在监听 2333 端口...");
+            ss = new ServerSocket(config.fileconfig.servicePort);
+            System.out.println("正在监听 " + config.fileconfig.servicePort + " 端口...");
         } catch (IOException e) {
             System.out.println("端口监听服务启动失败，错误：");
             e.printStackTrace();

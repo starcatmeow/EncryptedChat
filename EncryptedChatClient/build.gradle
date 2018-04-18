@@ -1,7 +1,10 @@
 
 jar {
     manifest {
-        attributes 'Main-Class': 'top.starcatmeow.chat.client.biz.Main'
+        attributes 'Main-Class': 'top.starcatmeow.chat.client.Main'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 dependencies{

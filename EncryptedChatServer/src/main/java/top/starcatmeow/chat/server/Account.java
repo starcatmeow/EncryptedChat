@@ -1,12 +1,16 @@
 package top.starcatmeow.chat.server;
 
+import java.io.Serializable;
+
 /**
  * Created by Dongruixuan Li on 2017/5/26.
  */
-public class Account {
+public class Account implements Serializable {
     private String username;
     private String password;
 
+    public Account() {
+    }
     public Account(String username, String password) {
         this.username = username;
         this.password = password;
