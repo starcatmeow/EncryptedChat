@@ -16,7 +16,7 @@ import java.security.PublicKey;
  * Created by Dongruixuan Li on 2017/1/30.
  */
 public class Cert {
-    public static void getAESKey(Socket socket) throws Exception {
+    public static boolean getAESKey(Socket socket) throws Exception {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         PublicKey pk1 = RSA.getInstance().getPublicKey(dis.readUTF());
@@ -35,9 +35,13 @@ public class Cert {
             ChatClientUI.label.setText("正常");
         } else if (report.equals(":N~n04$-rVhS=KxF")) {
             ChatClientUI.label.setText("认证失败");
+            return false;
+
         } else {
             ChatClientUI.label.setText("服务器返回了不正确的数据，请检查版本是否匹配：" + report);
+            return false;
         }
+        return true;
     }
 
     public static void getAESKey() throws Exception {

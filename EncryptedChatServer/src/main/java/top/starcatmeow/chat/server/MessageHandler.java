@@ -21,12 +21,12 @@ public class MessageHandler implements Runnable {
             DataInputStream dis = new DataInputStream(client.getSocket().getInputStream());
             while (true) {
                 String temp = client.getAes().decrypt(dis.readUTF());
-                temp = client.getIpandport() + " 说 " + temp;
+                temp = client.getUsername() + " (" + client.getIpandport() + ")" + " 说 " + temp;
                 MessageSender.Broadcast(temp);
             }
         } catch (IOException e) {
             Main.clients.remove(client);
-            MessageSender.Broadcast(client.getIpandport() + " 已下线！现在有 " + (--Main.OnlineCount) + " 人在线");
+            MessageSender.Broadcast(client.getUsername() + " (" + client.getIpandport() + ")" + " 已下线！现在有 " + (--Main.OnlineCount) + " 人在线");
         }
     }
 }

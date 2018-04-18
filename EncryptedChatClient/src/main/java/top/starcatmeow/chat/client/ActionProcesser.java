@@ -49,7 +49,11 @@ public class ActionProcesser implements ActionListener {
             }
 
             try {
-                Cert.getAESKey(socket);
+                if (!Cert.getAESKey(socket)) {
+                    jb2.setEnabled(true);
+                    jb3.setEnabled(true);
+                    return;
+                }
             } catch (Exception e1) {
                 e1.printStackTrace();
             }

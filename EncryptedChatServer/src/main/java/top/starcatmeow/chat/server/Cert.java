@@ -97,8 +97,9 @@ public class Cert implements Runnable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            client.setUsername(username);
             Main.clients.add(client);
-            MessageSender.Broadcast(username + " 已连接至服务器，目前有 " + (++Main.OnlineCount) + " 人在线");
+            MessageSender.Broadcast(client.getUsername() + " (" + client.getIpandport() + ")" + " 已连接至服务器，目前有 " + (++Main.OnlineCount) + " 人在线");
             new Thread(new MessageHandler(client)).start();
         } else {
             try {
