@@ -13,7 +13,7 @@ public class MessageSender {
             dos = new DataOutputStream(client.getSocket().getOutputStream());
             dos.writeUTF(client.getAes().encrypt(msg));
         } catch (IOException e) {
-            System.out.println("信息发送失败，错误：");
+            System.out.println(getConsoleString.get("cannotsendmessage"));
             e.printStackTrace();
         }
     }

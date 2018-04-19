@@ -12,6 +12,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.text.MessageFormat;
 
 /**
  * Created by Dongruixuan Li on 2017/1/15.
@@ -92,12 +93,12 @@ public class Cert implements Runnable {
             }
             client.setUsername(username);
             Main.clients.add(client);
-            MessageSender.Broadcast(client.getUsername() + " (" + client.getIpandport() + ")" + " 已连接至服务器，目前有 " + (++Main.OnlineCount) + " 人在线");
+            MessageSender.Broadcast(client.getUsername() + " (" + client.getIpandport() + ")" + " " + MessageFormat.format(getConsoleString.get("connected"), String.valueOf(++Main.OnlineCount)));
             new Thread(new MessageHandler(client)).start();
         } else {
             try {
                 dos.writeUTF(RSA.getInstance().encrypt(":N~n04$-rVhS=KxF", pk1));
-                System.out.println(client.getIpandport() + "尝试登陆，已拒绝，所输入的账号为：" + username + "   密码为：" + password);
+                System.out.println(client.getIpandport() + MessageFormat.format(getConsoleString.get("refused"), username, password));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (NoSuchPaddingException e) {

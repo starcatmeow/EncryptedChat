@@ -17,12 +17,12 @@ public class Config {
     public Config() {
         ObjectMapper om = new ObjectMapper();
         try {
-            fileconfig = om.readValue(new File("config.json"), Config_fs.class);
+            fileconfig = om.readValue(new File("config/config.json"), Config_fs.class);
         } catch (IOException e) {
-            System.out.println("配置文件读取失败：");
+            System.out.println(getConsoleString.get("cannotreadConfig"));
             e.printStackTrace();
         }
-        System.out.println("成功读取配置文件！");
+        System.out.println(getConsoleString.get("readConfigsuccess"));
 
         if (fileconfig.useMysql)
             initMySQL();
@@ -44,7 +44,7 @@ public class Config {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                System.out.println("无法连接至MySQL服务器");
+                System.out.println(getConsoleString.get("cannotconnectmySQL"));
             }
             return false;
         } else {
@@ -58,26 +58,25 @@ public class Config {
 
     public void initMySQL() {
         try {
-            System.out.println("正在加载MySQL JDBC驱动...");
             Class.forName("com.mysql.jdbc.Driver");
-            System.out.println("加载成功，正在登录至MySQL服务器");
+            System.out.println(getConsoleString.get("loginmySQL"));
 
             conn = DriverManager.getConnection("jdbc:mysql://" + fileconfig.mysqlData.mySQLHost + ":" + fileconfig.mysqlData.mySQLPort + "/" + fileconfig.mysqlData.mySQLDatabase + "?characterEncoding=utf8&useSSL=" + fileconfig.mysqlData.useSSL, fileconfig.mysqlData.mySQLUsername, fileconfig.mysqlData.mySQLPassword);
-            System.out.println("登录成功");
+            System.out.println(getConsoleString.get("loginsuccess"));
             state = conn.prepareStatement("SELECT * FROM accounts WHERE username=? and password=?");
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            System.out.println("无法加载MySQL JDBC驱动!");
+            System.out.println(getConsoleString.get("cannotloaddriver"));
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("无法登录至MySQL服务器");
+            System.out.println(getConsoleString.get("cannotloginmySQL"));
         }
     }
 
     public void importAccountsfromFile() {
         try {
-            accountList = new ObjectMapper().readValue(new File(fileconfig.accountFile), new ObjectMapper().getTypeFactory().constructParametricType(ArrayList.class, Account.class));
+            accountList = new ObjectMapper().readValue(new File("config/" + fileconfig.accountFile), new ObjectMapper().getTypeFactory().constructParametricType(ArrayList.class, Account.class));
         } catch (IOException e) {
             e.printStackTrace();
         }
