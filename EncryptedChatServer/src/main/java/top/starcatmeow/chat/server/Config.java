@@ -16,8 +16,20 @@ public class Config {
 
     public Config() {
         ObjectMapper om = new ObjectMapper();
+        File configdir = new File("config/");
+        configdir.mkdir();
+        File configjson = new File("config/config.json");
+        if (!configjson.exists()) {
+            System.out.println(getConsoleString.get("hasnotconfigjson"));
+            try {
+                om.writeValue(configjson, fileconfig);
+            } catch (IOException e) {
+                System.out.println(getConsoleString.get("cannotwriteConfig"));
+                e.printStackTrace();
+            }
+        }
         try {
-            fileconfig = om.readValue(new File("config/config.json"), Config_fs.class);
+            fileconfig = om.readValue(configjson, Config_fs.class);
         } catch (IOException e) {
             System.out.println(getConsoleString.get("cannotreadConfig"));
             e.printStackTrace();
@@ -75,8 +87,23 @@ public class Config {
     }
 
     public void importAccountsfromFile() {
+        File accountjson = new File("config/" + fileconfig.accountFile);
+        if (!accountjson.exists()) {
+            System.out.println(getConsoleString.get("hasnotaccountjson"));
+            List<Account> examplelist = new ArrayList<Account>();
+            examplelist.add(new Account("test", "testpassword"));
+            examplelist.add(new Account("test1", "testpassword1"));
+            examplelist.add(new Account("中文测试用户", "中文测试密码"));
+            try {
+                new ObjectMapper().writeValue(accountjson, examplelist);
+            } catch (IOException e) {
+                System.out.println(getConsoleString.get("cannotwriteConfig"));
+                e.printStackTrace();
+            }
+        }
         try {
-            accountList = new ObjectMapper().readValue(new File("config/" + fileconfig.accountFile), new ObjectMapper().getTypeFactory().constructParametricType(ArrayList.class, Account.class));
+            accountList = new ObjectMapper().readValue(accountjson, new ObjectMapper().getTypeFactory().constructParametricType(ArrayList.class, Account.class));
+            System.out.println(getConsoleString.get("readAccountsuccess"));
         } catch (IOException e) {
             e.printStackTrace();
         }

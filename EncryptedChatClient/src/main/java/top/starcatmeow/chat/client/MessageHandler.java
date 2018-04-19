@@ -38,7 +38,7 @@ public class MessageHandler extends Thread {
             while (true) {
                 String encryptedchat = ChatClientUI.readfromoreceivejtf();
                 String decryptedchat = AES.getInstance().decrypt(encryptedchat);
-                jta.append("对方 说 " + decryptedchat + "\n");
+                jta.append(getUIString.get("othersay") + " " + decryptedchat + "\n");
                 jta.setCaretPosition(jta.getText().length());
             }
         }

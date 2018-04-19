@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.text.MessageFormat;
 
 /**
  * Created by Dongruixuan Li on 2017/1/30.
@@ -20,25 +21,25 @@ public class Cert {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         PublicKey pk1 = RSA.getInstance().getPublicKey(dis.readUTF());
-        ChatClientUI.label.setText("正在从服务器取得密钥（2/5）");
-        dos.writeUTF(RSA.getInstance().encrypt(JOptionPane.showInputDialog("请输入认证用户名："), pk1));
-        dos.writeUTF(RSA.getInstance().encrypt(JOptionPane.showInputDialog("请输入认证密码："), pk1));
-        ChatClientUI.label.setText("正在从服务器取得密钥（3/5）");
+        ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(2)));
+        dos.writeUTF(RSA.getInstance().encrypt(JOptionPane.showInputDialog(getUIString.get("enterusername")), pk1));
+        dos.writeUTF(RSA.getInstance().encrypt(JOptionPane.showInputDialog(getUIString.get("enterpassword")), pk1));
+        ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(3)));
         KeyPair kp1 = RSA.getInstance().RSAKeyGen();
         PublicKey pk = kp1.getPublic();
         dos.writeUTF(new BASE64Encoder().encode(pk.getEncoded()));
-        ChatClientUI.label.setText("正在从服务器取得密钥（4/5）");
+        ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(4)));
         String report = RSA.getInstance().decrypt(dis.readUTF(), kp1.getPrivate());
         if (report.equals("kf*MxU2|)+bsPCm:")) {
-            ChatClientUI.label.setText("正在从服务器取得密钥（5/5）");
+            ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(5)));
             AES.getInstance().setKey(new SecretKeySpec(RSA.getInstance().decrypttobyte(dis.readUTF(), kp1.getPrivate()), "AES"));
-            ChatClientUI.label.setText("正常");
+            ChatClientUI.label.setText(getUIString.get("normal"));
         } else if (report.equals(":N~n04$-rVhS=KxF")) {
-            ChatClientUI.label.setText("认证失败");
+            ChatClientUI.label.setText(getUIString.get("authfail"));
             return false;
 
         } else {
-            ChatClientUI.label.setText("服务器返回了不正确的数据，请检查版本是否匹配：" + report);
+            ChatClientUI.label.setText(getUIString.get("authbug") + report);
             return false;
         }
         return true;
@@ -52,7 +53,7 @@ public class Cert {
         SwingUtilities.invokeLater(() -> ChatClientUI.writetoosendjtf(finalEncodepubkey));
 
         String encryptedaeskey = ChatClientUI.readfromoreceivejtf();
-        SwingUtilities.invokeLater(() -> ChatClientUI.label.setText("正在解密密钥"));
+        SwingUtilities.invokeLater(() -> ChatClientUI.label.setText(getUIString.get("decryptkey")));
         AES.getInstance().setKey(new SecretKeySpec(RSA.getInstance().decrypttobyte(encryptedaeskey, kp1.getPrivate()), "AES"));
     }
 
@@ -64,7 +65,7 @@ public class Cert {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        SwingUtilities.invokeLater(() -> ChatClientUI.label.setText("正在生成密钥"));
+        SwingUtilities.invokeLater(() -> ChatClientUI.label.setText(getUIString.get("genkey")));
         SecretKey sk = null;
 
         try {

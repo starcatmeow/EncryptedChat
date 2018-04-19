@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.text.MessageFormat;
 
 import static top.starcatmeow.chat.client.ChatClientUI.*;
 
@@ -17,31 +18,31 @@ import static top.starcatmeow.chat.client.ChatClientUI.*;
 public class ActionProcesser implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand() == "连接服务器") {
+        if (e.getActionCommand() == getUIString.get("connect")) {
             jb2.setEnabled(false);
             jb3.setEnabled(false);
-            label.setText("等待输入服务器信息");
+            label.setText(getUIString.get("wfiserverinfo"));
 
             boolean b1 = true;
             while (b1) {
-                String ip = JOptionPane.showInputDialog("请输入IP：");
+                String ip = JOptionPane.showInputDialog(getUIString.get("enterip"));
 
-                String port = JOptionPane.showInputDialog("请输入端口：");
-                label.setText("正在建立Socket连接");
+                String port = JOptionPane.showInputDialog(getUIString.get("enterport"));
+                label.setText(getUIString.get("econnection"));
                 socket = null;
                 try {
                     socket = new Socket(ip, new Integer(port));
                     b1 = false;
-                    label.setText("Socket连接建立成功，正在从服务器取得密钥（1/5）");
+                    label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(1)));
                 } catch (IOException e1) {
                     e1.printStackTrace();
-                    label.setText("无法连接至服务器，请尝试重新连接");
+                    label.setText(getUIString.get("cannotconnect"));
                     jb2.setEnabled(true);
                     jb3.setEnabled(true);
                     return;
                 } catch (NumberFormatException e1) {
                     e1.printStackTrace();
-                    label.setText("无法连接至服务器，请尝试重新连接");
+                    label.setText(getUIString.get("cannotconnect"));
                     jb2.setEnabled(true);
                     jb3.setEnabled(true);
                     return;
@@ -73,9 +74,9 @@ public class ActionProcesser implements ActionListener {
             jb1.setEnabled(true);
             jtf1.setEnabled(true);
             jb2.setEnabled(true);
-            jb2.setText("断开连接");
+            jb2.setText(getUIString.get("disconnect"));
             jb1.addActionListener(e14 -> {
-                if (e14.getActionCommand() == "发送") {
+                if (e14.getActionCommand() == getUIString.get("send")) {
                     if (!jtf.getText().equals("")) {
                         try {
                             finalDos.writeUTF(AES.getInstance().encrypt(jtf.getText()));
@@ -87,7 +88,7 @@ public class ActionProcesser implements ActionListener {
                 }
             });
         }
-        if (e.getActionCommand() == "断开连接") {
+        if (e.getActionCommand() == getUIString.get("disconnect")) {
             Main.messagehandlerThread.interrupt();
             jb1.setEnabled(false);
             jtf1.setEnabled(false);
@@ -96,29 +97,29 @@ public class ActionProcesser implements ActionListener {
             try {
                 socket.close();
             } catch (IOException e1) {
-                JOptionPane.showMessageDialog(null, "断开失败！请尝试重启客户端！");
+                JOptionPane.showMessageDialog(null, getUIString.get("cannotdisconnect"));
                 e1.printStackTrace();
                 return;
             }
             jb2.setEnabled(true);
             jb3.setEnabled(true);
-            jb2.setText("连接服务器");
-            int clear = JOptionPane.showConfirmDialog(null, "是否清空聊天记录？", "清屏", JOptionPane.YES_NO_OPTION);
+            jb2.setText(getUIString.get("connect"));
+            int clear = JOptionPane.showConfirmDialog(null, getUIString.get("emptymessages"), getUIString.get("clear"), JOptionPane.YES_NO_OPTION);
             if (clear == 0) {
                 jta1.setText("");
             }
-            label.setText("等待用户操作");
+            label.setText(getUIString.get("waitoperation"));
         }
-        if (e.getActionCommand() == "其它连接模式") {
+        if (e.getActionCommand() == getUIString.get("otherconnectmode")) {
             oreceivePanel.setLayout(new BorderLayout(5, 5));                                         //新建一个Panel->BorderLayout，包含接收框以及确认按钮，让用户把接收到的内容输入程序中
             oreceivePanel.add("Center", oreceiveJtf);
             oreceivePanel.add("East", oReceive);
-            oreceivePanel.setBorder(BorderFactory.createTitledBorder("接收到的内容"));
+            oreceivePanel.setBorder(BorderFactory.createTitledBorder(getUIString.get("receiveddata")));
 
             osendPanel.setLayout(new BorderLayout(5, 5));                                            //新建一个Panel->BorderLayout，包含输出框以及拷贝按钮，让用户把程序输出的内容发送出去
             osendPanel.add("Center", osendJtf);
             osendPanel.add("East", osend);
-            osendPanel.setBorder(BorderFactory.createTitledBorder("需发送的内容"));
+            osendPanel.setBorder(BorderFactory.createTitledBorder(getUIString.get("datatobesent")));
 
             oPanel.setLayout(new GridLayout(2, 1));                                                   //新建一个Panel->GridLayout，包含以上两个Panel
             oPanel.add(oreceivePanel);
@@ -127,16 +128,15 @@ public class ActionProcesser implements ActionListener {
             ccui.jp7.add("Center", oPanel);                                                           //加入其它连接模式需要的Panel
             ccui.revalidate();                                                                                  //重绘界面
             jb2.setEnabled(false);                                                                              //处理后续界面响应
-            jb3.setText("退出此模式");
+            jb3.setText(getUIString.get("exitothermode"));
 
 
-
-            label.setText("等待用户选择角色");
-            Object[] options = {"发起方", "接收方"};
-            int result = JOptionPane.showOptionDialog(null, "请选择你的角色", "选择角色", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+            label.setText(getUIString.get("waitchoose"));
+            Object[] options = {getUIString.get("initiator"), getUIString.get("receiver")};
+            int result = JOptionPane.showOptionDialog(null, getUIString.get("chooserole"), getUIString.get("choose"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
             if (result == 0) {
                 inOther = true;
-                SwingUtilities.invokeLater(() -> label.setText("等待对方发送公钥"));
+                SwingUtilities.invokeLater(() -> label.setText(getUIString.get("waitpubkey")));
 //                new Thread(()->{
                 try {
                     Cert.makeandsendAESKey();
@@ -150,10 +150,10 @@ public class ActionProcesser implements ActionListener {
 
                 jb1.setEnabled(true);
                 jtf1.setEnabled(true);
-                SwingUtilities.invokeLater(() -> label.setText("正常"));
+                SwingUtilities.invokeLater(() -> label.setText(getUIString.get("normal")));
             } else if (result == 1) {
                 inOther = true;
-                SwingUtilities.invokeLater(() -> label.setText("等待对方发送密钥"));
+                SwingUtilities.invokeLater(() -> label.setText(getUIString.get("waitseckey")));
                 try {
                     Cert.getAESKey();
                 } catch (Exception e1) {
@@ -166,10 +166,10 @@ public class ActionProcesser implements ActionListener {
 
                 jb1.setEnabled(true);
                 jtf1.setEnabled(true);
-                SwingUtilities.invokeLater(() -> label.setText("正常"));
+                SwingUtilities.invokeLater(() -> label.setText(getUIString.get("normal")));
             }
         }
-        if (e.getActionCommand() == "退出此模式") {
+        if (e.getActionCommand() == getUIString.get("exitothermode")) {
             inOther = false;
             ccui.jp7.remove(1);
             ccui.revalidate();
@@ -177,37 +177,37 @@ public class ActionProcesser implements ActionListener {
             jb1.setEnabled(false);
             jtf1.setEnabled(false);
             jb2.setEnabled(true);
-            jb3.setText("其它连接模式");
+            jb3.setText(getUIString.get("otherconnectmode"));
 
             oreceiveJtf.setText("");
             osendJtf.setText("");
             Main.messagehandlerThread.stop();
-            int clear = JOptionPane.showConfirmDialog(null, "是否清空聊天记录？", "清屏", JOptionPane.YES_NO_OPTION);
+            int clear = JOptionPane.showConfirmDialog(null, getUIString.get("emptymessages"), getUIString.get("clear"), JOptionPane.YES_NO_OPTION);
             if (clear == 0) {
                 jta1.setText("");
             }
-            label.setText("等待用户操作");
+            label.setText(getUIString.get("waitoperation"));
         }
-        if (e.getActionCommand() == "拷贝") {
+        if (e.getActionCommand() == getUIString.get("copy")) {
             Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
             Transferable tText = new StringSelection(osendJtf.getText());
             clip.setContents(tText, null);
-            osend.setText("已拷贝");
+            osend.setText(getUIString.get("copied"));
             osend.setEnabled(false);
         }
-        if (e.getActionCommand() == "确认") {
+        if (e.getActionCommand() == getUIString.get("confirm")) {
             if (!oreceiveJtf.getText().equals("")) {
                 receiveBuffer = oreceiveJtf.getText();
                 oreceiveJtf.setText("");
             }
         }
-        if (e.getActionCommand() == "发送") {
+        if (e.getActionCommand() == getUIString.get("send")) {
             if (!jtf1.getText().equals("")) {
 
                 SwingUtilities.invokeLater(() -> {
                     String encryptedchat = AES.getInstance().encrypt(jtf1.getText());
                     ChatClientUI.writetoosendjtf(encryptedchat);
-                    jta1.append("你 说 " + jtf1.getText() + "\n");
+                    jta1.append(getUIString.get("yousay") + " " + jtf1.getText() + "\n");
                     jtf1.setText("");
                 });
 

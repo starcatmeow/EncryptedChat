@@ -27,7 +27,7 @@ public class ChatClientUI extends JFrame implements Runnable {
     static String receiveBuffer = null;
     static JPanel oPanel = new JPanel(), oreceivePanel = new JPanel(), osendPanel = new JPanel();
     static JTextField oreceiveJtf = new JTextField(), osendJtf = new JTextField();
-    static JButton oReceive = new JButton("确认"), osend = new JButton("拷贝");
+    static JButton oReceive = new JButton(getUIString.get("confirm")), osend = new JButton(getUIString.get("copy"));
     static Lock readLock = new Lock();
 
     protected static ActionProcesser ap = new ActionProcesser();
@@ -49,7 +49,7 @@ public class ChatClientUI extends JFrame implements Runnable {
     public static void writetoosendjtf(String str) {
         osendJtf.setText(str.replace('\n', ' '));
         osend.setEnabled(true);
-        osend.setText("拷贝");
+        osend.setText(getUIString.get("copy"));
     }
 
     public ChatClientUI() {
@@ -81,13 +81,13 @@ public class ChatClientUI extends JFrame implements Runnable {
 
             }
         });
-        jb1 = new JButton("发送");
+        jb1 = new JButton(getUIString.get("send"));
         jb1.setEnabled(false);
         jtf1.setEnabled(false);
         osendJtf.setEnabled(false);
         osend.setEnabled(false);
-        jb2 = new JButton("连接服务器");
-        jb3 = new JButton("其它连接模式");
+        jb2 = new JButton(getUIString.get("connect"));
+        jb3 = new JButton(getUIString.get("otherconnectmode"));
         jp1 = new JPanel();
         jp2 = new JPanel();
         jp3 = new JPanel();
@@ -103,16 +103,16 @@ public class ChatClientUI extends JFrame implements Runnable {
         jp3.setLayout(new BorderLayout(5, 5));
         jp3.add("Center", jsp1);
         jp3.add("South", jp4);
-        jp3.setBorder(BorderFactory.createTitledBorder("聊天"));
+        jp3.setBorder(BorderFactory.createTitledBorder(getUIString.get("chat")));
 
         jp2.setLayout(new BorderLayout(5, 5));
         jp2.add(label);
-        jp2.setBorder(BorderFactory.createTitledBorder("状态"));
+        jp2.setBorder(BorderFactory.createTitledBorder(getUIString.get("status")));
 
         jp5.setLayout(new GridLayout(1, 2));
         jp5.add(jb2);
         jp5.add(jb3);
-        jp5.setBorder(BorderFactory.createTitledBorder("操作"));
+        jp5.setBorder(BorderFactory.createTitledBorder(getUIString.get("operate")));
 
         jp6.setLayout(new BorderLayout(5, 5));
         jp6.add("Center", jp2);
@@ -143,9 +143,9 @@ public class ChatClientUI extends JFrame implements Runnable {
         ccui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ccui.setSize(800, 600);
         ccui.setLocationRelativeTo(null);
-        ccui.setTitle("聊天系统客户端");
+        ccui.setTitle(getUIString.get("encryptedchat"));
         ccui.setVisible(true);
-        label.setText("等待用户操作");
+        label.setText(getUIString.get("waitoperation"));
 
         oreceiveJtf.addKeyListener(new KeyListener() {
             @Override
