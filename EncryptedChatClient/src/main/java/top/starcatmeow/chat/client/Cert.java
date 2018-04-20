@@ -20,6 +20,7 @@ public class Cert {
     public static boolean getAESKey(Socket socket) throws Exception {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        RSA.getInstance().strength = dis.readInt();
         PublicKey pk1 = RSA.getInstance().getPublicKey(dis.readUTF());
         ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(2)));
         dos.writeUTF(RSA.getInstance().encrypt(JOptionPane.showInputDialog(getUIString.get("enterusername")), pk1));

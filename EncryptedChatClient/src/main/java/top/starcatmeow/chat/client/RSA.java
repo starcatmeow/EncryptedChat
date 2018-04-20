@@ -20,6 +20,7 @@ public class RSA {
     static RSA rsa = null;
     Cipher cipher = null;
     KeyPairGenerator kpg = null;
+    int strength = 2048;
 
     private RSA() {
 
@@ -85,7 +86,7 @@ public class RSA {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        kpg.initialize(2048);
+        kpg.initialize(strength);
         return kpg.genKeyPair();
     }
 

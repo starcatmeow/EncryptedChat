@@ -1,10 +1,7 @@
 package top.starcatmeow.chat.server;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 
 /**
  * Created by Dongruixuan Li on 2017/5/26.

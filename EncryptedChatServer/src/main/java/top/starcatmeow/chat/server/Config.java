@@ -1,6 +1,8 @@
 package top.starcatmeow.chat.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +15,8 @@ public class Config {
     Connection conn = null;
     PreparedStatement state = null;
     List<Account> accountList = null;
+    Logger loggerinfo = LogManager.getLogger(Config.class);
+    Logger loggererror = LogManager.getLogger("errorslogger");
 
     public Config() {
         ObjectMapper om = new ObjectMapper();
@@ -20,21 +24,25 @@ public class Config {
         configdir.mkdir();
         File configjson = new File("config/config.json");
         if (!configjson.exists()) {
-            System.out.println(getConsoleString.get("hasnotconfigjson"));
+            loggerinfo.warn(getConsoleString.get("hasnotconfigjson"));
             try {
                 om.writeValue(configjson, fileconfig);
             } catch (IOException e) {
-                System.out.println(getConsoleString.get("cannotwriteConfig"));
-                e.printStackTrace();
+                loggererror.error(getConsoleString.get("cannotwriteConfig"));
+                for (StackTraceElement ste : e.getStackTrace())
+                    loggererror.error(ste.toString());
+
             }
         }
         try {
             fileconfig = om.readValue(configjson, Config_fs.class);
         } catch (IOException e) {
-            System.out.println(getConsoleString.get("cannotreadConfig"));
-            e.printStackTrace();
+            loggererror.error(getConsoleString.get("cannotreadConfig"));
+            for (StackTraceElement ste : e.getStackTrace())
+                loggererror.error(ste.toString());
+
         }
-        System.out.println(getConsoleString.get("readConfigsuccess"));
+        loggerinfo.info(getConsoleString.get("readConfigsuccess"));
 
         if (fileconfig.useMysql)
             initMySQL();
@@ -55,8 +63,10 @@ public class Config {
                     return true;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println(getConsoleString.get("cannotconnectmySQL"));
+                loggererror.error(getConsoleString.get("cannotconnectmySQL"));
+                for (StackTraceElement ste : e.getStackTrace())
+                    loggererror.error(ste.toString());
+
             }
             return false;
         } else {
@@ -71,25 +81,29 @@ public class Config {
     public void initMySQL() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            System.out.println(getConsoleString.get("loginmySQL"));
+            loggerinfo.info(getConsoleString.get("loginmySQL"));
 
             conn = DriverManager.getConnection("jdbc:mysql://" + fileconfig.mysqlData.mySQLHost + ":" + fileconfig.mysqlData.mySQLPort + "/" + fileconfig.mysqlData.mySQLDatabase + "?characterEncoding=utf8&useSSL=" + fileconfig.mysqlData.useSSL, fileconfig.mysqlData.mySQLUsername, fileconfig.mysqlData.mySQLPassword);
-            System.out.println(getConsoleString.get("loginsuccess"));
+            loggerinfo.info(getConsoleString.get("loginsuccess"));
             state = conn.prepareStatement("SELECT * FROM accounts WHERE username=? and password=?");
 
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println(getConsoleString.get("cannotloaddriver"));
+            loggererror.error(getConsoleString.get("cannotloaddriver"));
+            for (StackTraceElement ste : e.getStackTrace())
+                loggererror.error(ste.toString());
+
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println(getConsoleString.get("cannotloginmySQL"));
+            loggererror.error(getConsoleString.get("cannotloginmySQL"));
+            for (StackTraceElement ste : e.getStackTrace())
+                loggererror.error(ste.toString());
+
         }
     }
 
     public void importAccountsfromFile() {
         File accountjson = new File("config/" + fileconfig.accountFile);
         if (!accountjson.exists()) {
-            System.out.println(getConsoleString.get("hasnotaccountjson"));
+            loggerinfo.warn(getConsoleString.get("hasnotaccountjson"));
             List<Account> examplelist = new ArrayList<Account>();
             examplelist.add(new Account("test", "testpassword"));
             examplelist.add(new Account("test1", "testpassword1"));
@@ -97,15 +111,18 @@ public class Config {
             try {
                 new ObjectMapper().writeValue(accountjson, examplelist);
             } catch (IOException e) {
-                System.out.println(getConsoleString.get("cannotwriteConfig"));
-                e.printStackTrace();
+                loggererror.error(getConsoleString.get("cannotwriteConfig"));
+                for (StackTraceElement ste : e.getStackTrace())
+                    loggererror.error(ste.toString());
             }
         }
         try {
             accountList = new ObjectMapper().readValue(accountjson, new ObjectMapper().getTypeFactory().constructParametricType(ArrayList.class, Account.class));
-            System.out.println(getConsoleString.get("readAccountsuccess"));
+            loggerinfo.info(getConsoleString.get("readAccountsuccess"));
         } catch (IOException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace())
+                loggererror.error(ste.toString());
+
         }
     }
 }

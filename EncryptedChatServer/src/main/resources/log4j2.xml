@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" name="EncryptedChat" packages="top.starcatmeow.chat.server">
+    <Appenders>
+        <Console name="all" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss z} %level:   %msg%n"/>
+        </Console>
+        <RollingRandomAccessFile name="infos" fileName="logs/ecserver-info.log"
+                                 filePattern="logs/$${date:yyyy-MM}/ecserver-info-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss z} %level:   %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="16 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10000"/>
+        </RollingRandomAccessFile>
+        <Async name="infoasync">
+            <AppenderRef ref="infos"/>
+        </Async>
+        <RollingRandomAccessFile name="errors" fileName="logs/error/ecserver-error.log"
+                                 filePattern="logs/$${date:yyyy-MM}/ecserver-error-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS z} %t %F %M %l %level:   %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="2 MB"/>
+            </Policies>
+
+        </RollingRandomAccessFile>
+        <Async name="errorasync">
+            <AppenderRef ref="errors"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="errorslogger" level="error" additivity="false">
+            <AppenderRef ref="errorasync"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="infoasync"/>
+        </Root>
+    </Loggers>
+
+</Configuration>

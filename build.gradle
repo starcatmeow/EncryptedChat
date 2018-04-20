@@ -8,7 +8,7 @@ repositories {
 
 subprojects {
     group 'top.starcatmeow'
-    version '2.0-release'
+    version '2.1-release'
     apply plugin: 'java'
     repositories {
         maven{
@@ -28,6 +28,7 @@ allprojects {
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.5'
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.5'
+        compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
     }
 }
 

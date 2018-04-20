@@ -11,7 +11,6 @@ public class getUIString {
         if (locale.toString().equals("zh_CN"))
             res = ResourceBundle.getBundle("lang.lang", locale);
         else {
-            System.out.println(locale.toString());
             res = ResourceBundle.getBundle("lang.lang", Locale.US);
         }
     }

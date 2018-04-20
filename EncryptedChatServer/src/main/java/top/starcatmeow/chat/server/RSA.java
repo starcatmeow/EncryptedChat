@@ -85,7 +85,7 @@ public class RSA {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        kpg.initialize(2048);
+        kpg.initialize(Main.config.fileconfig.rsastrength > 2048 ? Main.config.fileconfig.rsastrength : 2048);
         return kpg.genKeyPair();
     }
 

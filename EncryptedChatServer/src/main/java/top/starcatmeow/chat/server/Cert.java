@@ -1,5 +1,7 @@
 package top.starcatmeow.chat.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.BadPaddingException;
@@ -19,9 +21,11 @@ import java.text.MessageFormat;
  */
 public class Cert implements Runnable {
     Client client;
-
+    Logger loggerinfo, loggererror;
     public Cert(Client client) {
         this.client = client;
+        loggerinfo = LogManager.getLogger(Cert.class);
+        loggererror = LogManager.getLogger("errorslogger");
     }
 
     @Override
@@ -31,18 +35,23 @@ public class Cert implements Runnable {
         try {
             dis = new DataInputStream(client.getSocket().getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         }
         try {
             dos = new DataOutputStream(client.getSocket().getOutputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
+        }
+        try {
+            dos.writeInt(Main.config.fileconfig.rsastrength > 2048 ? Main.config.fileconfig.rsastrength : 2048);
+        } catch (IOException e) {
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         }
         KeyPair kp = RSA.getInstance().RSAKeyGen();
         try {
             dos.writeUTF(new BASE64Encoder().encode(kp.getPublic().getEncoded()));
         } catch (IOException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         }
         String username = null;
         String password = null;
@@ -50,46 +59,46 @@ public class Cert implements Runnable {
             username = RSA.getInstance().decrypt(dis.readUTF(), kp.getPrivate());
             password = RSA.getInstance().decrypt(dis.readUTF(), kp.getPrivate());
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         } catch (InvalidKeyException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         } catch (BadPaddingException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         }
         PublicKey pk1 = null;
         try {
             String t = dis.readUTF();
             pk1 = RSA.getInstance().getPublicKey(t);
         } catch (Exception e) {
-            e.printStackTrace();
+            for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
         }
         if (Main.config.isValid(new Account(username, password))) {
             try {
                 dos.writeUTF(RSA.getInstance().encrypt("kf*MxU2|)+bsPCm:", pk1));
             } catch (IOException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (NoSuchPaddingException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (InvalidKeyException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (BadPaddingException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (IllegalBlockSizeException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             }
             try {
                 client.setAeskey(client.getAes().AESKeygen());
                 dos.writeUTF(RSA.getInstance().encrypt(client.getAeskey().getEncoded(), pk1));
             } catch (Exception e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             }
             client.setUsername(username);
             Main.clients.add(client);
@@ -98,19 +107,19 @@ public class Cert implements Runnable {
         } else {
             try {
                 dos.writeUTF(RSA.getInstance().encrypt(":N~n04$-rVhS=KxF", pk1));
-                System.out.println(client.getIpandport() + MessageFormat.format(getConsoleString.get("refused"), username, password));
+                loggerinfo.warn(client.getIpandport() + MessageFormat.format(getConsoleString.get("refused"), username, password));
             } catch (IOException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (NoSuchPaddingException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (InvalidKeyException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (BadPaddingException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             } catch (IllegalBlockSizeException e) {
-                e.printStackTrace();
+                for (StackTraceElement ste : e.getStackTrace()) loggererror.error(ste.toString());
             }
         }
     }
