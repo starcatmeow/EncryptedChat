@@ -19,70 +19,77 @@ public class ActionProcesser implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand() == getUIString.get("connect")) {
-            jb2.setEnabled(false);
+            jb2.setEnabled(false);                                                                                      //禁用两个操作按钮
             jb3.setEnabled(false);
-            label.setText(getUIString.get("wfiserverinfo"));
+            label.setText(getUIString.get("wfiserverinfo"));                                                            //设置UI状态信息
 
             boolean b1 = true;
             while (b1) {
-                String ip = JOptionPane.showInputDialog(getUIString.get("enterip"));
+                String ip = JOptionPane.showInputDialog(getUIString.get("enterip"));                                    //输入服务器信息
 
                 String port = JOptionPane.showInputDialog(getUIString.get("enterport"));
-                label.setText(getUIString.get("econnection"));
+                label.setText(getUIString.get("econnection"));                                                          //设置UI状态信息
                 socket = null;
                 try {
-                    socket = new Socket(ip, new Integer(port));
+                    socket = new Socket(ip, new Integer(port));                                                         //向服务器发起Socket请求
                     b1 = false;
-                    label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(1)));
+                    label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(1)));                  //设置UI状态信息
                 } catch (IOException e1) {
-                    e1.printStackTrace();
-                    label.setText(getUIString.get("cannotconnect"));
-                    jb2.setEnabled(true);
+                    //进入此处代表无法连接到服务器
+                    e1.printStackTrace();                                                                               //输出错误信息至控制台
+                    label.setText(getUIString.get("cannotconnect"));                                                    //设置UI状态信息
+                    jb2.setEnabled(true);                                                                               //启用两个操作按钮
                     jb3.setEnabled(true);
-                    return;
+                    return;                                                                                             //停止后续操作
                 } catch (NumberFormatException e1) {
-                    e1.printStackTrace();
-                    label.setText(getUIString.get("cannotconnect"));
-                    jb2.setEnabled(true);
+                    //进入此处代表用户输入的服务器端口无法正常转换为数字
+                    e1.printStackTrace();                                                                               //输出错误信息至控制台
+                    label.setText(getUIString.get("cannotconnect"));                                                    //设置UI状态信息
+                    jb2.setEnabled(true);                                                                               //启用两个操作按钮
                     jb3.setEnabled(true);
-                    return;
+                    return;                                                                                             //停止后续操作
                 }
             }
 
             try {
-                if (!Cert.getAESKey(socket)) {
-                    jb2.setEnabled(true);
+                if (!Cert.getAESKey(socket)) {                                                                          //转交认证模块
+                    //出错进入此处
+                    jb2.setEnabled(true);                                                                               //启用两个操作按钮
                     jb3.setEnabled(true);
-                    return;
+                    return;                                                                                             //停止后续操作
                 }
             } catch (Exception e1) {
                 e1.printStackTrace();
+                jb2.setEnabled(true);                                                                                   //启用两个操作按钮
+                jb3.setEnabled(true);
+                return;                                                                                                 //停止后续操作
             }
 
-            Main.messagehandlerThread = new Thread(new MessageHandler(socket));
-            Main.messagehandlerThread.start();
+            Main.messagehandlerThread = new Thread(new MessageHandler(socket));                                         //新建接收线程
+            Main.messagehandlerThread.start();                                                                          //启动线程
 
             final JTextField jtf = ccui.jtf1;
 
             DataOutputStream dos = null;
             try {
-                dos = new DataOutputStream(socket.getOutputStream());
+                dos = new DataOutputStream(socket.getOutputStream());                                                   //新建输出流
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
             final DataOutputStream finalDos = dos;
-            jb1.setEnabled(true);
-            jtf1.setEnabled(true);
-            jb2.setEnabled(true);
-            jb2.setText(getUIString.get("disconnect"));
+            jb1.setEnabled(true);                                                                                       //启用发送按钮
+            jtf1.setEnabled(true);                                                                                      //启用输入框
+            jb2.setEnabled(true);                                                                                       //启用断开按钮
+            jb2.setText(getUIString.get("disconnect"));                                                                 //更改按钮文字为断开
             jb1.addActionListener(e14 -> {
-                if (e14.getActionCommand() == getUIString.get("send")) {
+                if (e14.getActionCommand() == getUIString.get("send")) {                                                //新建发送按钮监听器
                     if (!jtf.getText().equals("")) {
+                        //输入框不为空进入此处
                         try {
-                            finalDos.writeUTF(AES.getInstance().encrypt(jtf.getText()));
-                            jtf.setText("");
+                            finalDos.writeUTF(AES.getInstance().encrypt(jtf.getText()));                                //加密后发送至服务器
+                            jtf.setText("");                                                                            //清空输入框
                         } catch (IOException e1) {
-                            e1.printStackTrace();
+                            e1.printStackTrace();                                                                       //显示错误信息
                         }
                     }
                 }
@@ -134,6 +141,7 @@ public class ActionProcesser implements ActionListener {
             label.setText(getUIString.get("waitchoose"));
             Object[] options = {getUIString.get("initiator"), getUIString.get("receiver")};
             int result = JOptionPane.showOptionDialog(null, getUIString.get("chooserole"), getUIString.get("choose"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+            //选择角色
             if (result == 0) {
                 inOther = true;
                 SwingUtilities.invokeLater(() -> label.setText(getUIString.get("waitpubkey")));
@@ -203,14 +211,13 @@ public class ActionProcesser implements ActionListener {
         }
         if (e.getActionCommand() == getUIString.get("send")) {
             if (!jtf1.getText().equals("")) {
-
+                //当输入框不为空时进入
                 SwingUtilities.invokeLater(() -> {
-                    String encryptedchat = AES.getInstance().encrypt(jtf1.getText());
-                    ChatClientUI.writetoosendjtf(encryptedchat);
-                    jta1.append(getUIString.get("yousay") + " " + jtf1.getText() + "\n");
-                    jtf1.setText("");
+                    String encryptedchat = AES.getInstance().encrypt(jtf1.getText());                                   //加密输入框内的内容
+                    ChatClientUI.writetoosendjtf(encryptedchat);                                                        //放入加密信息输出框中
+                    jta1.append(getUIString.get("yousay") + " " + jtf1.getText() + "\n");                               //在聊天框中增加内容
+                    jtf1.setText("");                                                                                   //清空输入框
                 });
-
             }
         }
     }

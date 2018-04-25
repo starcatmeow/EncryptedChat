@@ -19,15 +19,18 @@ public class MessageHandler implements Runnable {
     @Override
     public void run() {
         try {
-            DataInputStream dis = new DataInputStream(client.getSocket().getInputStream());
+            DataInputStream dis = new DataInputStream(client.getSocket().getInputStream());                             //获取输入流
             while (true) {
-                String temp = client.getAes().decrypt(dis.readUTF());
+                String temp = client.getAes().decrypt(dis.readUTF());                                                   //读取客户端信息
                 temp = MessageFormat.format(getConsoleString.get("message"), client.getUsername(), client.getIpandport(), temp);
-                MessageSender.Broadcast(temp);
+                //格式化信息
+                MessageSender.Broadcast(temp);                                                                          //广播信息
             }
         } catch (IOException e) {
-            Main.clients.remove(client);
+            //IO出错即代表客户端掉线
+            Main.clients.remove(client);                                                                                //从在线客户端列表中移除
             MessageSender.Broadcast(client.getUsername() + " (" + client.getIpandport() + ")" + " " + MessageFormat.format(getConsoleString.get("disconnect"), String.valueOf(--Main.OnlineCount)));
+            //广播下线信息
         }
     }
 }

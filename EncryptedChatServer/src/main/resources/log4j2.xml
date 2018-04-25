@@ -33,9 +33,11 @@
     <Loggers>
         <Logger name="errorslogger" level="error" additivity="false">
             <AppenderRef ref="errorasync"/>
+            <AppenderRef ref="all"/>
         </Logger>
         <Root level="info">
             <AppenderRef ref="infoasync"/>
+            <AppenderRef ref="all"/>
         </Root>
     </Loggers>
 

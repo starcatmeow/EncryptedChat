@@ -18,32 +18,33 @@ import java.text.MessageFormat;
  */
 public class Cert {
     public static boolean getAESKey(Socket socket) throws Exception {
-        DataInputStream dis = new DataInputStream(socket.getInputStream());
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        RSA.getInstance().strength = dis.readInt();
-        PublicKey pk1 = RSA.getInstance().getPublicKey(dis.readUTF());
-        ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(2)));
-        dos.writeUTF(RSA.getInstance().encrypt(JOptionPane.showInputDialog(getUIString.get("enterusername")), pk1));
-        dos.writeUTF(RSA.getInstance().encrypt(JOptionPane.showInputDialog(getUIString.get("enterpassword")), pk1));
-        ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(3)));
-        KeyPair kp1 = RSA.getInstance().RSAKeyGen();
+        DataInputStream dis = new DataInputStream(socket.getInputStream());                                             //获取输入流
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());                                          //获取输出流
+        RSA.getInstance().strength = dis.readInt();                                                                     //从服务端获取RSA密钥强度
+        PublicKey pk1 = RSA.getInstance().getPublicKey(dis.readUTF());                                                  //从服务端获取公钥
+        ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(2)));                 //更新UI上状态信息
+        dos.writeUTF(RSA.getInstance().encrypt(JOptionPane.showInputDialog(getUIString.get("enterusername")), pk1));    //弹出用户名输入框，加密后发送至服务端
+        dos.writeUTF(RSA.getInstance().encrypt(JOptionPane.showInputDialog(getUIString.get("enterpassword")), pk1));    //弹出密码输入框，加密后发送至服务端
+        ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(3)));                 //更新UI上状态信息
+        KeyPair kp1 = RSA.getInstance().RSAKeyGen();                                                                    //生成RSA密钥对
         PublicKey pk = kp1.getPublic();
-        dos.writeUTF(new BASE64Encoder().encode(pk.getEncoded()));
-        ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(4)));
-        String report = RSA.getInstance().decrypt(dis.readUTF(), kp1.getPrivate());
+        dos.writeUTF(new BASE64Encoder().encode(pk.getEncoded()));                                                      //发送公钥至服务端
+        ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(4)));                 //更新UI上状态信息
+        String report = RSA.getInstance().decrypt(dis.readUTF(), kp1.getPrivate());                                     //获取认证结果
         if (report.equals("kf*MxU2|)+bsPCm:")) {
-            ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(5)));
+            ChatClientUI.label.setText(MessageFormat.format(getUIString.get("getkey"), String.valueOf(5)));             //更新UI上状态信息
             AES.getInstance().setKey(new SecretKeySpec(RSA.getInstance().decrypttobyte(dis.readUTF(), kp1.getPrivate()), "AES"));
-            ChatClientUI.label.setText(getUIString.get("normal"));
+            //从服务端获取AES密钥
+            ChatClientUI.label.setText(getUIString.get("normal"));                                                      //更新UI上状态信息
         } else if (report.equals(":N~n04$-rVhS=KxF")) {
-            ChatClientUI.label.setText(getUIString.get("authfail"));
-            return false;
+            ChatClientUI.label.setText(getUIString.get("authfail"));                                                    //更新UI上状态信息
+            return false;                                                                                               //返回失败结果
 
         } else {
-            ChatClientUI.label.setText(getUIString.get("authbug") + report);
-            return false;
+            ChatClientUI.label.setText(getUIString.get("authbug") + report);                                            //更新UI上状态信息
+            return false;                                                                                               //返回失败结果
         }
-        return true;
+        return true;                                                                                                    //返回成功结果
     }
 
     public static void getAESKey() throws Exception {
