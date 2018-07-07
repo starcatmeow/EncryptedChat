@@ -24,7 +24,7 @@ allprojects {
         options.encoding = "UTF-8"
     }
     dependencies{
-        compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.46'
+        compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.11'
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.5'
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.5'
